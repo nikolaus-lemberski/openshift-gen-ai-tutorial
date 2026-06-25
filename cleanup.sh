@@ -54,6 +54,8 @@ fi
 CLUSTER=$(oc whoami --show-server)
 echo ""
 warn "This will remove ALL tutorial components from: $CLUSTER"
+warn "Destructive, cluster-wide cleanup: this script deletes operators, CRDs, and node labels/resources."
+warn "Do NOT run on a shared or production cluster unless you understand and accept the impact."
 echo ""
 read -rp "Type 'yes' to confirm: " CONFIRM
 if [[ "$CONFIRM" != "yes" ]]; then

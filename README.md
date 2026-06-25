@@ -87,8 +87,18 @@ oc wait --for=jsonpath='{.status.state}'=ready \
 **Verify:** Driver installation takes 3–5 minutes. The ClusterPolicy wait above can succeed before drivers finish compiling and before GPUs are allocatable — do not proceed until the loop below exits:
 
 ```bash
+MAX_WAIT_SECONDS=1800  # 30 minutes
+START_TIME=$(date +%s)
 until oc get nodes -o jsonpath='{range .items[*]}{.status.allocatable.nvidia\.com/gpu}{" "}{end}' | grep -q '[1-9]'; do
-  echo "Waiting for nvidia.com/gpu..."
+  NOW=$(date +%s)
+  ELAPSED=$((NOW - START_TIME))
+  if [ "$ELAPSED" -ge "$MAX_WAIT_SECONDS" ]; then
+    echo "Timed out waiting for allocatable GPUs after ${MAX_WAIT_SECONDS}s."
+    echo "Run: oc get nodes -o 'custom-columns=NAME:.metadata.name,GPUS:.status.allocatable.nvidia\\.com/gpu'"
+    echo "Then check Troubleshooting (ClusterPolicy not ready / Pod pending, no GPU)."
+    exit 1
+  fi
+  echo "Waiting for nvidia.com/gpu... (${ELAPSED}s elapsed)"
   sleep 10
 done
 oc get nodes -o 'custom-columns=NAME:.metadata.name,GPUS:.status.allocatable.nvidia\.com/gpu'
