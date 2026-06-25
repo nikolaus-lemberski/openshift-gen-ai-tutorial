@@ -1,0 +1,43 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    modelFormat: vLLM
+    opendatahub.io/connections: llama-32-3b-instruct
+    opendatahub.io/hardware-profile-name: gpu-profile
+    opendatahub.io/hardware-profile-namespace: redhat-ods-applications
+    opendatahub.io/model-type: generative
+    openshift.io/description: ""
+    openshift.io/display-name: llama-32-3b-instruct
+    security.opendatahub.io/enable-auth: "false"
+    serving.kserve.io/deploymentMode: Standard
+    serving.kserve.io/stop: "false"
+  labels:
+    opendatahub.io/dashboard: "true"
+    opendatahub.io/genai-asset: "true"
+  name: llama-32-3b-instruct
+  namespace: my-first-model
+spec:
+  predictor:
+    automountServiceAccountToken: false
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      args:
+        - --dtype=half
+        - --max-model-len=20000
+        - --gpu-memory-utilization=0.95
+      modelFormat:
+        name: vLLM
+      name: ""
+      resources:
+        limits:
+          cpu: "4"
+          memory: 16Gi
+          nvidia.com/gpu: "1"
+        requests:
+          cpu: "1"
+          memory: 6Gi
+          nvidia.com/gpu: "1"
+      runtime: llama-32-3b-instruct
+      storageUri: oci://quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-3b-instruct

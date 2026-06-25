@@ -1,0 +1,14 @@
+apiVersion: nfd.openshift.io/v1
+kind: NodeFeatureDiscovery
+metadata:
+  name: nfd-instance
+  namespace: openshift-nfd
+spec:
+  enableTaints: false
+  instance: ""
+  operand:
+    servicePort: 0
+  prunerOnDelete: false
+  topologyUpdater: false
+  workerConfig:
+    configData: ""

@@ -1,0 +1,36 @@
+apiVersion: nvidia.com/v1
+kind: ClusterPolicy
+metadata:
+  name: gpu-cluster-policy
+spec:
+  daemonsets: {}
+  operator:
+    defaultRuntime: crio
+    runtimeClass: nvidia
+    use_ocp_driver_toolkit: true
+  nodeStatusExporter:
+    enabled: true
+  driver:
+    enabled: true
+    kernelModuleType: auto
+    upgradePolicy:
+      autoUpgrade: true
+  devicePlugin:
+    enabled: true
+  dcgm:
+    enabled: true
+  dcgmExporter:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  gfd:
+    enabled: true
+  toolkit:
+    enabled: true
+  mig:
+    strategy: single
+  validator:
+    plugin:
+      env:
+        - name: WITH_WORKLOAD
+          value: "false"

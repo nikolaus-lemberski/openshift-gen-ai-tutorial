@@ -1,0 +1,32 @@
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  annotations:
+    opendatahub.io/description: "GPU profile with 1 NVIDIA GPU, up to 4 CPUs and 16 GiB memory for model serving."
+    opendatahub.io/disabled: "false"
+    opendatahub.io/display-name: gpu-profile
+  labels:
+    app.kubernetes.io/part-of: hardwareprofile
+    app.opendatahub.io/hardwareprofile: "true"
+  name: gpu-profile
+  namespace: redhat-ods-applications
+spec:
+  identifiers:
+    - defaultCount: 2
+      displayName: CPU
+      identifier: cpu
+      maxCount: 4
+      minCount: 1
+      resourceType: CPU
+    - defaultCount: 8Gi
+      displayName: Memory
+      identifier: memory
+      maxCount: 16Gi
+      minCount: 4Gi
+      resourceType: Memory
+    - defaultCount: 1
+      displayName: NVIDIA GPU
+      identifier: nvidia.com/gpu
+      maxCount: 1
+      minCount: 1
+      resourceType: Accelerator
