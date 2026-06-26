@@ -90,6 +90,7 @@ delete_namespace_if_exists redhat-ods-applications
 delete_namespace_if_exists redhat-ods-monitoring
 delete_namespace_if_exists rhoai-model-registries
 delete_namespace_if_exists rhods-notebooks
+delete_namespace_if_exists models-as-a-service
 delete_namespace_if_exists redhat-ods-operator
 
 # ─── Step 3: OpenShift AI Dependencies ───────────────────────────────────────

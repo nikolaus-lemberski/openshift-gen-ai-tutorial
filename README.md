@@ -8,6 +8,13 @@ Get from a bare OpenShift cluster with GPUs to a running LLM inference endpoint 
 
 **Time:** ~30 minutes (plus ~10 min for model pull on first deploy).
 
+> [!NOTE]
+> This does tutorial does not handle all possible issues that might involve the GPU accelerator enablement. In case of problems consult the documentation.
+
+[NVIDIA GPU Operator docs](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
+
+[OpenShift AI docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.5)
+
 ## Prerequisites
 
 - OpenShift 4.16+ cluster with `cluster-admin` access
@@ -162,7 +169,7 @@ oc wait --for=jsonpath='{.status.phase}'=Succeeded \
 Two custom resources configure the platform:
 
 1. **DSCInitialization** — sets up namespaces and monitoring
-2. **DataScienceCluster** — enables components (KServe, Dashboard, etc.)
+2. **DataScienceCluster** — enables components (KServe, Dashboard, Llama Stack Operator, etc.)
 
 Wait ~30 seconds for the operator webhook to become available, then apply:
 
@@ -179,7 +186,14 @@ oc wait --for=jsonpath='{.status.phase}'=Ready \
   datasciencecluster/default-dsc --timeout=300s
 ```
 
-**Verify:** The OpenShift AI dashboard is accessible:
+Enable the Gen AI Studio (Playground) in the dashboard. The operator creates `OdhDashboardConfig` with defaults that hide this feature — patch it:
+
+```bash
+oc patch odhdashboardconfig odh-dashboard-config -n redhat-ods-applications \
+  --type=merge -p '{"spec":{"dashboardConfig":{"genAiStudio":true}}}'
+```
+
+**Verify:** The OpenShift AI dashboard is accessible and Gen AI Studio is enabled:
 
 ```bash
 oc get route rhods-dashboard -n redhat-ods-applications
