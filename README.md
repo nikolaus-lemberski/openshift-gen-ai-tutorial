@@ -340,6 +340,14 @@ curl -s http://localhost:8080/v1/chat/completions \
 
 This section covers the same outcome as [Step 6](#step-6--deploy-a-model) using the OpenShift AI dashboard instead of YAML. Complete Steps 1–5 first so the cluster has GPUs, OpenShift AI, and the `gpu-profile` hardware profile from `20-gpu-hardwareprofile.yaml`.
 
+### Prerequisite
+
+Create the GPU hardware profile
+
+```bash
+oc apply -f resources/operators/20-gpu-hardwareprofile.yaml
+```
+
 ### Go into OpenShift AI
 
 Open the **Application Launcher** (grid icon) in the OpenShift console and select **Red Hat OpenShift AI** under **OpenShift Self Managed Services**.

@@ -71,6 +71,7 @@ info "Removing model deployment..."
 delete_if_exists inferenceservice llama-32-3b-instruct -n my-first-model
 delete_if_exists servingruntime llama-32-3b-instruct -n my-first-model
 delete_namespace_if_exists my-first-model
+delete_namespace_if_exists my-clickops-model
 
 # ─── Step 2: OpenShift AI (RHODS) ────────────────────────────────────────────
 
