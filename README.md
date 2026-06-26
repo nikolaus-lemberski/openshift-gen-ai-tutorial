@@ -11,8 +11,8 @@ Get from a bare OpenShift cluster with GPUs to a running LLM inference endpoint 
 > [!NOTE]
 > This does tutorial does not handle all possible issues that might involve the GPU accelerator enablement. In case of problems consult the documentation.
 
-* [NVIDIA GPU Operator docs](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
-* [OpenShift AI docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.5)
+- [NVIDIA GPU Operator docs](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
+- [OpenShift AI docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.5)
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Get from a bare OpenShift cluster with GPUs to a running LLM inference endpoint 
 - `jq` (used in Step 1 verification)
 - Access to `registry.redhat.io` (valid pull secret)
 
-If the cluster already has OpenShift AI or related operators installed, run `./cleanup.sh` first to return to a clean state before starting.
+If the cluster already has OpenShift AI or related operators installed, execute only the verification steps and move forward to Step 6 (model deployment).
 
 ---
 
@@ -220,12 +220,12 @@ oc apply -f resources/my-first-model/04-inference-service.yaml
 ### What each resource does
 
 
-| Resource             | Purpose                                                                                                         |
-| -------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Namespace**        | Isolated project for the model                                                                                  |
+| Resource             | Purpose                                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Namespace**        | Isolated project for the model                                                                                                |
 | **Secret**           | OCI URI for the OpenShift AI dashboard connection (`oci://quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-3b-instruct`) |
-| **ServingRuntime**   | Defines vLLM as the inference engine with the Red Hat container image                                           |
-| **InferenceService** | Declares the model deployment: GPU request, memory limits, vLLM args                                            |
+| **ServingRuntime**   | Defines vLLM as the inference engine with the Red Hat container image                                                         |
+| **InferenceService** | Declares the model deployment: GPU request, memory limits, vLLM args                                                          |
 
 
 ### Key InferenceService settings
@@ -312,14 +312,14 @@ curl -s http://localhost:8080/v1/chat/completions \
 ## Troubleshooting
 
 
-| Symptom                    | Check                                                               |
-| -------------------------- | ------------------------------------------------------------------- |
+| Symptom                    | Check                                                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Pod pending, no GPU        | `oc get nodes -o 'custom-columns=NAME:.metadata.name,GPUS:.status.allocatable.nvidia\.com/gpu'` — verify GPUS > 0 |
-| ClusterPolicy not ready    | `oc get pods -n nvidia-gpu-operator` — look for driver build pods   |
-| InferenceService not ready | `oc get events -n my-first-model --sort-by=.lastTimestamp`          |
-| OOM during model load      | Increase `memory` limits or reduce `--max-model-len`                |
-| Pull image error           | Verify pull secret has access to `registry.redhat.io` and `quay.io` |
-| Serverless CSV failed      | Confirm `10-serverless-operatorgroup.yaml` uses AllNamespaces (`spec: {}`) |
+| ClusterPolicy not ready    | `oc get pods -n nvidia-gpu-operator` — look for driver build pods                                                 |
+| InferenceService not ready | `oc get events -n my-first-model --sort-by=.lastTimestamp`                                                        |
+| OOM during model load      | Increase `memory` limits or reduce `--max-model-len`                                                              |
+| Pull image error           | Verify pull secret has access to `registry.redhat.io` and `quay.io`                                               |
+| Serverless CSV failed      | Confirm `10-serverless-operatorgroup.yaml` uses AllNamespaces (`spec: {}`)                                        |
 
 
 ---
@@ -365,25 +365,25 @@ oc apply -f resources/operators/20-gpu-hardwareprofile.yaml
 
 Open the **Application Launcher** (grid icon) in the OpenShift console and select **Red Hat OpenShift AI** under **OpenShift Self Managed Services**.
 
-![Go to Red Hat OpenShift AI from the Application Launcher](img/0_go_to_openshift_ai.png)
+Go to Red Hat OpenShift AI from the Application Launcher
 
 ### Create a project
 
 In the left sidebar, go to **Projects** and click **Create project**. Name it `my-clickops-model` and click **Create**.
 
-![Create project in OpenShift AI](img/1_create_project.png)
+Create project in OpenShift AI
 
 ### Browse the model catalog
 
 Go to **AI hub → Models**, search for `llama`, and pick a validated model from the results.
 
-![Search the model catalog for llama models](img/2_model_catalog.png)
+Search the model catalog for llama models
 
 ### Select a model
 
 Open the model detail page and click **Deploy model**.
 
-![Model detail page with Deploy model button](img/3_select_model.png)
+Model detail page with Deploy model button
 
 ### Deploy the model
 
@@ -391,11 +391,11 @@ The deployment wizard has four steps. Catalog import fills in most fields; confi
 
 **1. Model details** — URI and model type are pre-filled from the catalog.
 
-![Deploy wizard — model details](img/4_deploy_1.png)
+Deploy wizard — model details
 
 **2. Model deployment** — Select project `my-clickops-model` and hardware profile `gpu-profile` (1 GPU, 12 GiB memory).
 
-![Deploy wizard — model deployment](img/4_deploy_2.png)
+Deploy wizard — model deployment
 
 **3. Advanced settings** — Enable **Publish as AI asset endpoint** so the model appears in the Playground. Leave token authentication off for evaluation. Add the same vLLM runtime arguments as Step 6:
 
@@ -405,11 +405,11 @@ The deployment wizard has four steps. Catalog import fills in most fields; confi
 --gpu-memory-utilization=0.95
 ```
 
-![Deploy wizard — advanced settings](img/4_deploy_3.png)
+Deploy wizard — advanced settings
 
 **4. Review** — Confirm project, hardware profile, vLLM runtime, and runtime arguments, then deploy.
 
-![Deploy wizard — review](img/4_deploy_4.png)
+Deploy wizard — review
 
 Wait for the deployment to reach **Ready** on the **Models → Deployments** tab (first deploy pulls the model image; allow ~10 minutes).
 
@@ -417,15 +417,15 @@ Wait for the deployment to reach **Ready** on the **Models → Deployments** tab
 
 Go to **Gen AI studio → Playground**, select project `my-clickops-model`, and click **Create playground**.
 
-![Create a playground](img/5_playground_1.png)
+Create a playground
 
 Select the deployed model and click **Create**.
 
-![Configure playground — select model](img/5_playground_2.png)
+Configure playground — select model
 
 Send a prompt to verify the endpoint. The Playground uses the same OpenAI-compatible API as Step 7.
 
-![Playground chat with deployed model](img/6_playground_3.png)
+Playground chat with deployed model
 
 ---
 
