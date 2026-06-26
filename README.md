@@ -336,6 +336,78 @@ curl -s http://localhost:8080/v1/chat/completions \
 
 ---
 
+## Step 6 Alternative: Clickops model serving
+
+This section covers the same outcome as [Step 6](#step-6--deploy-a-model) using the OpenShift AI dashboard instead of YAML. Complete Steps 1–5 first so the cluster has GPUs, OpenShift AI, and the `gpu-profile` hardware profile from `20-gpu-hardwareprofile.yaml`.
+
+### Go into OpenShift AI
+
+Open the **Application Launcher** (grid icon) in the OpenShift console and select **Red Hat OpenShift AI** under **OpenShift Self Managed Services**.
+
+![Go to Red Hat OpenShift AI from the Application Launcher](img/0_go_to_openshift_ai.png)
+
+### Create a project
+
+In the left sidebar, go to **Projects** and click **Create project**. Name it `my-clickops-model` and click **Create**.
+
+![Create project in OpenShift AI](img/1_create_project.png)
+
+### Browse the model catalog
+
+Go to **AI hub → Models**, search for `llama`, and pick a validated model from the results.
+
+![Search the model catalog for llama models](img/2_model_catalog.png)
+
+### Select a model
+
+Open the model detail page and click **Deploy model**.
+
+![Model detail page with Deploy model button](img/3_select_model.png)
+
+### Deploy the model
+
+The deployment wizard has four steps. Catalog import fills in most fields; confirm the settings below match the YAML walkthrough.
+
+**1. Model details** — URI and model type are pre-filled from the catalog.
+
+![Deploy wizard — model details](img/4_deploy_1.png)
+
+**2. Model deployment** — Select project `my-clickops-model` and hardware profile `gpu-profile` (1 GPU, 12 GiB memory).
+
+![Deploy wizard — model deployment](img/4_deploy_2.png)
+
+**3. Advanced settings** — Enable **Publish as AI asset endpoint** so the model appears in the Playground. Leave token authentication off for evaluation. Add the same vLLM runtime arguments as Step 6:
+
+```
+--dtype=half
+--max-model-len=20000
+--gpu-memory-utilization=0.95
+```
+
+![Deploy wizard — advanced settings](img/4_deploy_3.png)
+
+**4. Review** — Confirm project, hardware profile, vLLM runtime, and runtime arguments, then deploy.
+
+![Deploy wizard — review](img/4_deploy_4.png)
+
+Wait for the deployment to reach **Ready** on the **Models → Deployments** tab (first deploy pulls the model image; allow ~10 minutes).
+
+### Test in the Playground
+
+Go to **Gen AI studio → Playground**, select project `my-clickops-model`, and click **Create playground**.
+
+![Create a playground](img/5_playground_1.png)
+
+Select the deployed model and click **Create**.
+
+![Configure playground — select model](img/5_playground_2.png)
+
+Send a prompt to verify the endpoint. The Playground uses the same OpenAI-compatible API as Step 7.
+
+![Playground chat with deployed model](img/6_playground_3.png)
+
+---
+
 ## Cleanup
 
 Remove just the model deployment:
