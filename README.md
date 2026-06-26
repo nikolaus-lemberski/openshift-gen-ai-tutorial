@@ -345,7 +345,10 @@ oc delete inferenceservice llama-32-3b-instruct -n my-first-model
 oc delete namespace my-first-model
 ```
 
-To fully uninstall everything (operators, CRDs, node labels) and return to a fresh cluster:
+To fully uninstall everything (operators, CRDs, node labels) and return to a fresh cluster, run the cleanup script.
+
+> [!CAUTION]
+> Only use in throw-away clusters. This script uninstalls and deletes a lot of stuff.
 
 ```bash
 ./cleanup.sh
