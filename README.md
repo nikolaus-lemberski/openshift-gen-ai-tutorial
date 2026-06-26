@@ -22,7 +22,8 @@ Get from a bare OpenShift cluster with GPUs to a running LLM inference endpoint 
 - `jq` (used in Step 1 verification)
 - Access to `registry.redhat.io` (valid pull secret)
 
-If the cluster already has OpenShift AI or related operators installed, execute only the verification steps and adapt the missing parts. Then move forward to Step 6 (model deployment).
+> [!WARNING]
+> If the cluster already has OpenShift AI or related operators installed, execute only the verification steps and adapt the missing parts. Then move forward to Step 6 (model deployment).
 
 ---
 
