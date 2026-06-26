@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Uninstalls everything deployed by the tutorial, returning the cluster
-# to a state with no OpenShift AI, GPU Operator, or NFD installed.
+# Uninstalls components installed by this tutorial, plus Authorino and
+# OpenShift Pipelines if present.
 # Run order: workloads → OpenShift AI → dependencies → GPU → NFD
 
 RED='\033[0;31m'
@@ -54,8 +54,8 @@ fi
 CLUSTER=$(oc whoami --show-server)
 echo ""
 warn "This will remove ALL tutorial components from: $CLUSTER"
-warn "Destructive, cluster-wide cleanup: this script deletes operators, CRDs, and node labels/resources."
-warn "Do NOT run on a shared or production cluster unless you understand and accept the impact."
+warn "This script removes only tutorial-installed components (plus Authorino and Pipelines subscriptions)."
+warn "It does not delete CRDs or patch node labels/resources."
 echo ""
 read -rp "Type 'yes' to confirm: " CONFIRM
 if [[ "$CONFIRM" != "yes" ]]; then
@@ -128,56 +128,10 @@ info "Removing NFD operator..."
 delete_subscription_and_csv nfd openshift-nfd
 delete_namespace_if_exists openshift-nfd
 
-# ─── Step 6: Cleanup CRDs (optional but thorough) ────────────────────────────
-
-info "Removing leftover CRDs..."
-for pattern in nvidia.com nfd.openshift.io datasciencecluster opendatahub kserve; do
-  for crd in $(oc get crd -o name 2>/dev/null | grep "$pattern" || true); do
-    info "  Deleting $crd"
-    oc delete "$crd" --timeout=30s 2>/dev/null || true
-  done
-done
-
-# ─── Step 7: Remove nvidia/nfd labels and extended resources from nodes ───────
-
-info "Removing nvidia/nfd labels and annotations from nodes..."
-for node in $(oc get nodes -o name); do
-  label_args=()
-  while IFS= read -r label; do
-    [[ -n "$label" ]] && label_args+=("${label}-")
-  done < <(oc get "$node" -o json | jq -r '.metadata.labels | keys[] | select(startswith("nvidia.com") or startswith("feature.node.kubernetes.io/"))' 2>/dev/null)
-  if [[ ${#label_args[@]} -gt 0 ]]; then
-    oc label "$node" "${label_args[@]}" 2>/dev/null || true
-    info "  Removed ${#label_args[@]} labels from $node"
-  fi
-
-  ann_args=()
-  while IFS= read -r ann; do
-    [[ -n "$ann" ]] && ann_args+=("${ann}-")
-  done < <(oc get "$node" -o json | jq -r '.metadata.annotations | keys[] | select(startswith("nvidia.com") or startswith("nfd.node.kubernetes.io/"))' 2>/dev/null)
-  if [[ ${#ann_args[@]} -gt 0 ]]; then
-    oc annotate "$node" "${ann_args[@]}" 2>/dev/null || true
-    info "  Removed ${#ann_args[@]} annotations from $node"
-  fi
-done
-
-info "Removing nvidia.com/gpu extended resource from nodes..."
-oc proxy &>/dev/null & PROXY_PID=$!
-sleep 2
-for node in $(oc get nodes -o jsonpath='{.items[*].metadata.name}'); do
-  if oc get node "$node" -o jsonpath='{.status.capacity}' | grep -q "nvidia.com/gpu"; then
-    curl -s -X PATCH -H "Content-Type: application/json-patch+json" \
-      --data '[{"op":"remove","path":"/status/capacity/nvidia.com~1gpu"}]' \
-      "http://127.0.0.1:8001/api/v1/nodes/$node/status" >/dev/null 2>&1 && \
-      info "  Removed nvidia.com/gpu from $node" || true
-  fi
-done
-kill $PROXY_PID 2>/dev/null || true
-
 # ─── Done ─────────────────────────────────────────────────────────────────────
 
 echo ""
-info "Cleanup complete. Cluster is back to a fresh state."
+info "Cleanup complete. Tutorial-installed components were removed."
 info "You can verify with:"
 echo "  oc get subscriptions.operators -A"
 echo "  oc get csv -A"
