@@ -11,9 +11,8 @@ Get from a bare OpenShift cluster with GPUs to a running LLM inference endpoint 
 > [!NOTE]
 > This does tutorial does not handle all possible issues that might involve the GPU accelerator enablement. In case of problems consult the documentation.
 
-[NVIDIA GPU Operator docs](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
-
-[OpenShift AI docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.5)
+* [NVIDIA GPU Operator docs](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
+* [OpenShift AI docs](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.5)
 
 ## Prerequisites
 
