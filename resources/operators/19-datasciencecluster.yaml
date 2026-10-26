@@ -9,7 +9,10 @@ spec:
     kserve:
       managementState: Managed
       rawDeploymentServiceConfig: Headless
+    # Deprecated in RHOAI 3.5 in favor of ogx; must be Removed for OGX to deploy
     llamastackoperator:
+      managementState: Removed
+    ogx:
       managementState: Managed
     modelregistry:
       managementState: Managed

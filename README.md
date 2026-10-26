@@ -169,7 +169,7 @@ oc wait --for=jsonpath='{.status.phase}'=Succeeded \
 Two custom resources configure the platform:
 
 1. **DSCInitialization** — sets up namespaces and monitoring
-2. **DataScienceCluster** — enables components (KServe, Dashboard, Llama Stack Operator, etc.)
+2. **DataScienceCluster** — enables components (KServe, Dashboard, OGX, etc.)
 
 Wait ~30 seconds for the operator webhook to become available, then apply:
 
@@ -186,6 +186,8 @@ oc wait --for=jsonpath='{.status.phase}'=Ready \
   datasciencecluster/default-dsc --timeout=300s
 ```
 
+> **Note:** As of OpenShift AI 3.5, the Llama Stack Operator (`llamastackoperator`) is deprecated and replaced by **OGX** (`ogx`), which backs the Gen AI Studio Playground. `llamastackoperator` must be set to `Removed`, otherwise OGX fails to deploy with *"LlamaStackOperator is set to Managed; it has been deprecated, set it to Removed before enabling OGX"*.
+
 Enable the Gen AI Studio (Playground) in the dashboard. The operator creates `OdhDashboardConfig` with defaults that hide this feature — patch it:
 
 ```bash
@@ -193,9 +195,11 @@ oc patch odhdashboardconfig odh-dashboard-config -n redhat-ods-applications \
   --type=merge -p '{"spec":{"dashboardConfig":{"genAiStudio":true}}}'
 ```
 
-**Verify:** The OpenShift AI dashboard is accessible and Gen AI Studio is enabled:
+**Verify:** OGX is healthy, and the OpenShift AI dashboard is accessible with Gen AI Studio enabled:
 
 ```bash
+oc get datasciencecluster default-dsc \
+  -o jsonpath='{.status.conditions[?(@.type=="OGXReady")].status}'
 oc get route rhods-dashboard -n redhat-ods-applications
 ```
 
